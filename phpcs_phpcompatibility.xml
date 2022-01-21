@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<ruleset name="PHPCompatibility">
+    <description>Check for PHP version compatibility.</description>
+
+    <config name="installed_paths" value="vendor/phpcompatibility/php-compatibility"/>
+
+    <arg name="extensions" value="php"/>
+    <arg name="parallel" value="8"/>
+    <arg name="cache"/>
+    <arg value="sp"/>
+
+    <rule ref="PHPCompatibility"/>
+</ruleset>
