@@ -1,4 +1,8 @@
 {
+  "name": "coddin-web/manifest-parser",
+  "description": "A simple plain PHP manifest parser which will return a Value Object to pass around in your application",
+  "keywords": ["coddin","php","manifest-parser"],
+  "homepage": "https://github.com/coddin-web/manifest-parser",
   "type": "project",
   "license": "MIT",
   "minimum-stability": "stable",
