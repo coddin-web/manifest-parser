@@ -11,7 +11,6 @@ final class ManifestData
     private array $scripts;
     /** @var array<string> */
     private array $styleSheets;
-    private ?string $errorMessage;
 
     /**
      * @param array<string> $scripts
@@ -19,12 +18,10 @@ final class ManifestData
      */
     private function __construct(
         array $scripts,
-        array $styleSheets,
-        ?string $errorMessage = null
+        array $styleSheets
     ) {
         $this->scripts = $scripts;
         $this->styleSheets = $styleSheets;
-        $this->errorMessage = $errorMessage;
 
         if (!empty($scripts)) {
             $this->hasData = true;
@@ -40,11 +37,6 @@ final class ManifestData
         array $styleSheets = []
     ): self {
         return new self($scripts, $styleSheets);
-    }
-
-    public static function error(string $message): self
-    {
-        return new self([], [], $message);
     }
 
     public function hasData(): bool
@@ -66,15 +58,5 @@ final class ManifestData
     public function getStyleSheets(): array
     {
         return $this->styleSheets;
-    }
-
-    public function hasError(): bool
-    {
-        return $this->errorMessage !== null;
-    }
-
-    public function getError(): string
-    {
-        return ($this->errorMessage ?? '');
     }
 }

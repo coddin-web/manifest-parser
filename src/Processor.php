@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Coddin\ManifestParser;
 
+use Coddin\ManifestParser\Exception\ManifestDataException;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use Safe\Exceptions\JsonException;
@@ -19,16 +20,19 @@ final class Processor
         $this->client = $clientFactory;
     }
 
+    /**
+     * @throws ManifestDataException
+     */
     public function getManifestData(string $manifestUrl): ManifestData
     {
         if (empty($manifestUrl)) {
-            return ManifestData::error('The manifest URL is not set');
+            throw ManifestDataException::create('The manifest URL is not set');
         }
 
         try {
             $manifestUrlParsed = \Safe\parse_url($manifestUrl);
         } catch (UrlException $e) {
-            return ManifestData::error('Parsing the provided URL failed');
+            throw ManifestDataException::create('Parsing the provided URL failed', $e);
         }
 
         // @codeCoverageIgnoreStart
@@ -48,25 +52,26 @@ final class Processor
                 ]
             );
         } catch (GuzzleException $e) {
-            return ManifestData::error(
-                'Something went wrong when retrieving the manifest data, perhaps the URL is malformed'
+            throw ManifestDataException::create(
+                'Something went wrong when retrieving the manifest data, perhaps the URL is malformed',
+                $e
             );
         }
 
         $body = $response->getBody()->getContents();
 
         if (empty($body)) {
-            return ManifestData::error('The manifest URL is working but returned an empty body');
+            throw ManifestDataException::create('The manifest URL is working but returned an empty body');
         }
 
         try {
             $manifestData = \Safe\json_decode($body, true);
         } catch (JsonException $e) {
-            return ManifestData::error($e->getMessage());
+            throw ManifestDataException::create($e->getMessage(), $e);
         }
 
         if (!is_array($manifestData)) {
-            return ManifestData::error('Decoding the manifest JSON did not result in an array');
+            throw ManifestDataException::create('Decoding the manifest JSON did not result in an array');
         }
 
         $scriptFiles = [];
