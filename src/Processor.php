@@ -83,7 +83,16 @@ final class Processor
             $baseUrl .= ':' . $manifestUrlParsed['port'];
         }
 
-        foreach ($manifestData as $file) {
+        foreach ($manifestData as $entry) {
+            $file = is_array($entry) ? $entry['file'] : $entry;
+            if (!is_string($file)) {
+                throw ManifestDataException::create('The manifest data contains an entry that is not a string');
+            }
+
+            if (substr($file, 0, strlen('/')) !== '/') {
+                $file = '/' . $file;
+            }
+
             switch (true) {
                 // TODO Change to str_ends_with as soon as this package only supports PHP ^8.x.
                 case substr($file, -3) === '.js':
